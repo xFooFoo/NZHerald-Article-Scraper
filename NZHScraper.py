@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-url = 'URL'
+url = ''
 response = requests.get(url)
 content = ""
 
@@ -29,7 +29,7 @@ if response.status_code == 200:
     with open(file_path, 'w', encoding='utf-8', newline='') as file:
         # Write the content to the file
         file.write(content)
-    print(f"Content written to {file_path}")
+    print(f"Content written to \"{file_path}\"")
 
 else:
     print(f"Failed to retrieve the page. Status code: {response.status_code}")

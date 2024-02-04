@@ -1,4 +1,4 @@
-This script scrapes any NZ Herald article and outputs a text file with the content.
+This script scrapes any NZ Herald article and outputs the content to a text file. 
 
 # Instructions
 - ``` python install beautifulsoup4  ```

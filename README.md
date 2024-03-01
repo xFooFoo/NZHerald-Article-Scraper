@@ -2,6 +2,7 @@ This script scrapes any NZ Herald article and outputs the content to a text file
 
 # Instructions
 
+Run 
 ```
 python install beautifulsoup4
 ```
@@ -12,6 +13,7 @@ Change the url variable in "NZHScraper.py" to any NZ Herald Article that you wou
 
 Open CMD & set directory to the file that has "NZHScraper.py"
 
+Run 
 ```
 python NZHScraper.py
 ```

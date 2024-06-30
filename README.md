@@ -8,9 +8,9 @@ python install beautifulsoup4
 
 Clone the repository
 
-Change the url variable in "NZHScraper.py" to any NZ Herald Article that you would like
+Enter the NZ Herald Article's URL as an input after running  "NZHScraperNew.py".
 
-Open CMD & set directory to the file that has "NZHScraper.py"
+Open CMD & set directory to the file that has "NZHScraperNew.py"
 
 Run 
 ```

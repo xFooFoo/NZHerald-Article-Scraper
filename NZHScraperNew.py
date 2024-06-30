@@ -2,7 +2,9 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
-url = 'https://www.nzherald.co.nz/nz/politics/health-transport-housing-major-announcements-to-come-in-final-days-of-christopher-luxons-action-plan/IA454F6OBZBIZMIEKHJARRGITM/'
+
+url = input('What\'s the URL for the NZ Herald Article? ')
+#url = 'https://www.nzherald.co.nz/business/we-didnt-have-any-food-in-the-house-asb-ceo-vittoria-shortt-on-her-tough-childhood-money-talks/TNURNHWFOBATTMFZF6EPR3ZSCM/#:~:text=ASB%20bank%20chief%20executive%20Vittoria,bank%20chief%20executive%20Vittoria%20Shortt.'
 response = requests.get(url)
 content = ""
 

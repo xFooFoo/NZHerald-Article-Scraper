@@ -1,5 +1,6 @@
 import requests
 import re
+import os
 from bs4 import BeautifulSoup
 
 
@@ -19,7 +20,7 @@ if response.status_code == 200:
     title = str(soup.find(class_='article__heading').text)
     content += "Title: " + title + "\n\n"
 
-    # Body Text Top Portion
+    # This is usually the article preview part
     parent_section = soup.select_one('section[data-test-ui="article-top-body"]')
     if parent_section:
         paragraphs = parent_section.find_all('p')
@@ -27,7 +28,7 @@ if response.status_code == 200:
         for paragraph in paragraphs:
             content += paragraph.text + "\n\n"
 
-    # Body Text Bottom Portion
+    # This is usually the latter part of the article where it's hidden behind a paywall
     parent_section = soup.select_one('section[data-test-ui="article-bottom-body"]')
     if parent_section:
         paragraphs = parent_section.find_all('p')
@@ -35,15 +36,17 @@ if response.status_code == 200:
         for paragraph in paragraphs:
             content += paragraph.text + "\n\n"
 
-    # Write content to a txt file
+    ############ Write content to a txt file ##########################
+    # Get the absolute path of the current script
+    script_directory = os.path.abspath(os.path.dirname(__file__))
     # filename can't have these special chars
-    file_path = re.sub("[\\\\/:*?\"<>|]", "", title) + ".txt"
+    file_path = script_directory + "\\" + re.sub("[\\\\/:*?\"<>|]", "", title) + ".txt"
     with open(file_path, 'w', encoding='utf-8', newline='') as file:
-        # Write the content to the file
+        # Write the content to the same location as the script
         file.write(content)
     print(f"Content written to \"{file_path}\"")
 
 else:
     print(f"Failed to retrieve the page. Status code: {response.status_code}")
 
-
+#print(content)

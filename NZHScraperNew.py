@@ -20,6 +20,14 @@ if response.status_code == 200:
     title = str(soup.find(class_='article__heading').text)
     content += "Title: " + title + "\n\n"
 
+    # Sometimes the article only has one body section
+    parent_section = soup.select_one('section[data-test-ui="article__body"]')
+    if parent_section:
+        paragraphs = parent_section.find_all('p')
+        # Extract and print the text content of each element
+        for paragraph in paragraphs:
+            content += paragraph.text + "\n\n"
+
     # This is usually the article preview part
     parent_section = soup.select_one('section[data-test-ui="article-top-body"]')
     if parent_section:

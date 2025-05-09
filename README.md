@@ -4,6 +4,7 @@ This script scrapes any NZ Herald article and outputs the content to a text file
 - ``` pip install beautifulsoup4  ```
 - ``` pip install requests ```
 - ``` pip install docx```
+- For the backend, all the depedencies are in requirements.txt
 - Clone the repository
 - Either run "NZHScraperNew.py" and enter the NZH article URL
 	or
@@ -13,6 +14,7 @@ This script scrapes any NZ Herald article and outputs the content to a text file
 
 ### Technologies used:
 - Python 3.8.3
+- Flask
 - Beautiful Soup 4 (Webscraping Library)
 - python-docx (to write DOCX content)
 - requests (to send HTTP requests)

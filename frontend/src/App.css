@@ -1,0 +1,87 @@
+/* Make the entire app take up the full height */
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  background-color: #202124; /* dark grey */
+  color: #ffffff;
+}
+
+body {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  margin: 0;
+  height: 100vh;
+  font-family: sans-serif;
+}
+
+.mainContainer {
+  text-align: center;
+  min-height: 100vh;
+  flex: 1; /* This pushes the footer down */
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  gap: 16px;
+  background-color: #202124;
+  color: #FFFFFF;
+}
+
+.contentContainer {
+  width: 922px;
+  text-align: left;
+  line-height: 1.5rem;
+  padding: 0 12px 6px;
+  flex: 1; /* This pushes the footer down */
+  border: 1px solid white;
+  border-radius: 16px;
+}
+
+.titleStyle {
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  /* flex */
+}
+
+input {
+  width: 800px;
+  height: 40px;
+  border-radius: 20px;
+  padding: 0 20px;
+}
+
+input::placeholder {
+  font-size: 18px; /* Adjust the size as needed */
+  color: #999;     /* Optionally, you can change the placeholder color */
+  padding: 0;
+}
+
+button {
+  width: 80px;
+  height: 40px;
+  border-radius: 12px;
+  color: #FFFFFF;
+  background-color: darkgreen;
+}
+
+.sentenceStyle {
+  font-family: Inter-variable, Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.footerStyle {
+  font-size: 12px;
+  padding:20px; 
+  text-align:center;
+}

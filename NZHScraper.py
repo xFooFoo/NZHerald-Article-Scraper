@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-url = ''
+url = 'https://www.nzherald.co.nz/nz/politics/golriz-ghahraman-case-experts-explain-complex-ptsd-and-loss-reactive-shoplifting/4CZZOYXJTVAZPMIRXFBGJ5X3VA/'
 response = requests.get(url)
 content = ""
 
@@ -25,7 +25,8 @@ if response.status_code == 200:
             content += paragraph.text + "\n\n"
 
     # Write content to a txt file
-    file_path = title + ".txt"
+    #file_path = title + ".txt"
+    file_path = "abc.txt"
     with open(file_path, 'w', encoding='utf-8', newline='') as file:
         # Write the content to the file
         file.write(content)

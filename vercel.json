@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build"
+    },
+    {
+      "src": "backend/app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/submit",
+      "dest": "/app.py"
+    },
+	{
+      "src": "/(.*)",                       # Any other route (for React frontend)
+      "dest": "/frontend/$1"                # Serve the static files from React app
+    }
+  ]
+}

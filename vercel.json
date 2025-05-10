@@ -15,9 +15,9 @@
       "src": "/api/submit",
       "dest": "/app.py"
     },
-	{
-      "src": "/(.*)",                       # Any other route (for React frontend)
-      "dest": "/frontend/$1"                # Serve the static files from React app
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
     }
   ]
 }

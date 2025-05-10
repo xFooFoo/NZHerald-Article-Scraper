@@ -4,10 +4,6 @@
     {
       "src": "api/app.py",
       "use": "@vercel/python"
-    },
-    {
-      "src": "frontend/build/**/*",
-      "use": "@vercel/static"
     }
   ],
   "routes": [

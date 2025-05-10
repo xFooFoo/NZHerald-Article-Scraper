@@ -14,7 +14,8 @@ This script scrapes any NZ Herald article and outputs the content to a text file
 
 ### Technologies used:
 - Python 3.8.3
-- Flask
+- Flask (Handles server routing and request-response logic. send_from_directory is used to serve the React Build)
+- React (front end)
 - Beautiful Soup 4 (Webscraping Library)
 - python-docx (to write DOCX content)
 - requests (to send HTTP requests)

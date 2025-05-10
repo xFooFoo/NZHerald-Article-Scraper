@@ -2,6 +2,7 @@ import './App.css';
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 
 function App() {
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
   const [url, setUrl] = useState<string>('');
   const [fetchStatus, setFetchStatus] = useState<string>('');
   const [title, setTitle] = useState<string>('');
@@ -18,7 +19,7 @@ function App() {
 
     // Send data to Flask using fetch
     try {
-      const response = await fetch('http://localhost:5000/api/submit', {
+      const response = await fetch(`${API_BASE_URL}/api/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,14 +1,24 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 from NZHScraperFlask import scrapeContent
+import os
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
 CORS(app) 
 
-@app.route('/', methods=['GET'])
-def home():
-    return 'Backend is running ✅✅✅', 200
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html'), 200 # React Entry point
+
+# This serves JS, CSS, manifest, etc.
+@app.route('/<path:path>')
+def serve_static_file(path):
+    file_path = os.path.join(app.static_folder, path)
+    if os.path.exists(file_path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/api/submit', methods=['POST'])
 def scrape_data():

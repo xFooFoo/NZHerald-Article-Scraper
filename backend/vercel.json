@@ -5,10 +5,10 @@
       "src": "app.py",
       "use": "@vercel/python"
     },
-	{
+    {
       "src": "../frontend/build/index.html",
       "use": "@vercel/static"
-    },
+    }
   ],
   "routes": [
     {

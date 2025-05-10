@@ -19,3 +19,4 @@ This script scrapes any NZ Herald article and outputs the content to a text file
 - Beautiful Soup 4 (Webscraping Library)
 - python-docx (to write DOCX content)
 - requests (to send HTTP requests)
+- Vercel (to deploy and host my Flask app)

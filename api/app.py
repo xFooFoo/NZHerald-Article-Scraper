@@ -39,6 +39,6 @@ def scrape_data():
     except Exception as e:
         return jsonify({"fetchStatus": f"Error: Invalid URL {url} 💀💀💀"}), 500
 
-if __name__ == '__main__':
-    print("Starting Flask server...")
-    app.run()
+# if __name__ == '__main__':
+#     print("Starting Flask server...")
+#     app.run()

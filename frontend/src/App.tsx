@@ -2,7 +2,7 @@ import './App.css';
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 
 function App() {
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const API_BASE_URL = 'http://localhost:5000';
   const [url, setUrl] = useState<string>('');
   const [fetchStatus, setFetchStatus] = useState<string>('');
   const [title, setTitle] = useState<string>('');
@@ -30,7 +30,6 @@ function App() {
       })
 
       const data = await response.json() // Get the response data
-      console.log(data) // Log the response from Flask
       setContent(data.content) // Store the received value in state
       setTitle(data.title)
       setFetchStatus(data.fetchStatus)

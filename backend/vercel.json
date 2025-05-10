@@ -2,11 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/app.py",
+      "src": "app.py",
       "use": "@vercel/python"
     },
 	{
-      "src": "frontend/build/index.html",
+      "src": "../frontend/build/index.html",
       "use": "@vercel/static"
     },
   ],

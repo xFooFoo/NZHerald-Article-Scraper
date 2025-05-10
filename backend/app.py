@@ -5,7 +5,7 @@ import os
 
 
 app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
-CORS(app) 
+CORS(app, resources={r"/api/*": {"origins": "*"}}) 
 
 @app.route('/')
 def serve_index():

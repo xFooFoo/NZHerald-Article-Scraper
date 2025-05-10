@@ -20,7 +20,7 @@ def serve_static_file(path):
     else:
         return send_from_directory(app.static_folder, 'index.html')
 
-@app.route('/api/submit', methods=['POST'])
+@app.route('/submit', methods=['POST'])
 def scrape_data():
     try:
         data = request.get_json()  # Get the JSON data from the request body

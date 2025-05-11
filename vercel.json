@@ -8,12 +8,13 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/app.py"
+      "src": "/submit",
+      "methods": ["POST"],
+      "dest": "backend/app.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend/build/$1"
+      "dest": "backend/app.py"
     }
   ]
 }

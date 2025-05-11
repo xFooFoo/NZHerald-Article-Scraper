@@ -2,10 +2,9 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from bs4 import BeautifulSoup
 import requests
-import re
 import os
 
-static_dir = os.path.join(os.path.dirname(__file__), './frontend/build')
+static_dir = os.path.join(os.path.dirname(__file__), '../frontend/build')
 app = Flask(__name__, static_folder=static_dir, static_url_path='')
 CORS(app) 
 
@@ -69,6 +68,6 @@ def scrapeContent(url):
     else:
         print(f"Failed to retrieve the page. Status code: {response.status_code}")
     return title, content
-# if __name__ == '__main__':
-#     print("Starting Flask server...")
-#     app.run()
+if __name__ == '__main__':
+    print("Starting Flask server...")
+    app.run()

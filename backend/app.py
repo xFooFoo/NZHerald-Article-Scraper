@@ -57,6 +57,6 @@ def scrapeContent(url):
     else:
         print(f"Failed to retrieve the page. Status code: {response.status_code}")
     return title, content
-# if __name__ == '__main__':
-#     print("Starting Flask server...")
-#     app.run()
+if __name__ == '__main__':
+    print("Starting Flask server...")
+    app.run()

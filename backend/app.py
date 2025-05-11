@@ -41,10 +41,6 @@ def scrape_data():
     except Exception as e:
         return jsonify({"fetchStatus": f"Error: Invalid URL {url} 💀💀💀"}), 500
 
-# Required for Vercel
-def handler(environ, start_response):
-    return app.wsgi_app(environ, start_response)
-
 def scrapeContent(url):
     response = requests.get(url)
     content = []

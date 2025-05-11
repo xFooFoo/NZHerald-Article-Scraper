@@ -1,5 +1,4 @@
 flask
 flask_cors
 requests
-docx
 bs4

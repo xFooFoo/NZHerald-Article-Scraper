@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 
 function App() {
   const API_BASE_URL = 'https://nzherald-server.vercel.app' // 'http://localhost:5000';
@@ -39,6 +39,9 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    document.title = "NZ Herald Article Scraper";
+  }, []);
 
   return (
     <>

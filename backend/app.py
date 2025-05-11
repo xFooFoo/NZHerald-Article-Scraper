@@ -1,25 +1,14 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_cors import CORS
 from bs4 import BeautifulSoup
 import requests
-import os
 
-static_dir = os.path.join(os.path.dirname(__file__), '../frontend/build')
-app = Flask(__name__, static_folder=static_dir, static_url_path='')
+app = Flask(__name__)
 CORS(app) 
 
 @app.route('/')
 def serve_index():
-    return send_from_directory(app.static_folder, 'index.html'), 200 # React Entry point
-
-# This serves JS, CSS, manifest, etc.
-@app.route('/<path:path>')
-def serve_static_file(path):
-    file_path = os.path.join(app.static_folder, path)
-    if os.path.exists(file_path):
-        return send_from_directory(app.static_folder, path)
-    else:
-        return send_from_directory(app.static_folder, 'index.html')
+    return render_template('index.html'), 200 # React Entry point
 
 @app.route('/submit', methods=['POST'])
 def scrape_data():

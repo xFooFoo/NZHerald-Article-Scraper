@@ -3,7 +3,7 @@ from flask_cors import CORS
 from NZHScraperFlask import scrapeContent
 import os
 
-static_dir = os.path.join(os.path.dirname(__file__), '../frontend/build')
+static_dir = os.path.join(os.path.dirname(__file__), './frontend/build')
 app = Flask(__name__, static_folder=static_dir, static_url_path='')
 CORS(app) 
 

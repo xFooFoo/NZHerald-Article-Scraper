@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from NZHScraperFlask import scrapeContent
+from docx import Document
+from bs4 import BeautifulSoup
+import requests
+import re
 import os
 
 static_dir = os.path.join(os.path.dirname(__file__), './frontend/build')
@@ -42,6 +45,35 @@ def scrape_data():
 # Required for Vercel
 def handler(environ, start_response):
     return app.wsgi_app(environ, start_response)
+
+def scrapeContent(url):
+    response = requests.get(url)
+    content = []
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        title = str(soup.find(class_='article__heading').text)
+
+        parent_section = soup.select_one('section[data-test-ui="article__body"]')
+        if parent_section:
+            paragraphs = parent_section.find_all('p')
+            for paragraph in paragraphs:
+                content.append(paragraph.text)
+
+        parent_section = soup.select_one('section[data-test-ui="article-top-body"]')
+        if parent_section:
+            paragraphs = parent_section.find_all('p')
+            for paragraph in paragraphs:
+                content.append(paragraph.text)
+
+        parent_section = soup.select_one('section[data-test-ui="article-bottom-body"]')
+        if parent_section:
+            paragraphs = parent_section.find_all('p')
+            for paragraph in paragraphs:
+                content.append(paragraph.text)
+    else:
+        print(f"Failed to retrieve the page. Status code: {response.status_code}")
+    return title, content
 # if __name__ == '__main__':
 #     print("Starting Flask server...")
 #     app.run()

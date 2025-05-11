@@ -1,35 +1,33 @@
 /* Make the entire app take up the full height */
-body, html, #root {
-  height: 100%;
+body, html{
   margin: 0;
   background-color: #202124; /* dark grey */
   color: #ffffff;
-}
-
-body {
-  display: flex;
-  text-align: center;
+  overflow-x: hidden;
+  flex-direction: column;
   justify-content: center;
-  margin: 0;
-  height: 100vh;
+  text-align: center;
+  align-items: center;
   font-family: sans-serif;
 }
 
 .mainContainer {
   text-align: center;
+  width: 100%;
   min-height: 100vh;
-  flex: 1; /* This pushes the footer down */
+  flex: 1 1 auto; /* This pushes the footer down */
   display: flex;
   flex-direction: column;
-  text-align: center;
   align-items: center;
+  text-align: center;
+  justify-content: center;
   gap: 16px;
   background-color: #202124;
   color: #FFFFFF;
 }
 
 .contentContainer {
-  width: 922px;
+  width: 50%;
   text-align: left;
   line-height: 1.5rem;
   padding: 0 12px 6px;
@@ -45,6 +43,7 @@ body {
 
 .formContainer {
   display: flex;
+  width: 100%;
   flex-direction: column;
   text-align: center;
   align-items: center;
@@ -54,7 +53,7 @@ body {
 }
 
 input {
-  width: 800px;
+  width: 45%;
   height: 40px;
   border-radius: 20px;
   padding: 0 20px;

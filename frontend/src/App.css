@@ -21,7 +21,6 @@ body, html{
   align-items: center;
   text-align: center;
   justify-content: center;
-  gap: 16px;
   background-color: #202124;
   color: #FFFFFF;
 }
@@ -83,4 +82,40 @@ button {
   font-size: 12px;
   padding:20px; 
   text-align:center;
+}
+
+@media (max-width: 600px) {
+  .contentContainer {
+    width: 90%;
+    padding: 0 1rem;
+    font-size: 1.5rem; 
+  }
+  h1 {
+    width: 100%;
+    font-size: 2.5rem;
+  }
+  input {
+    width: 75%;
+  }
+  label {
+    font-size: 1.2rem;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 768px) {
+  .contentContainer {
+    width: 90%;
+    padding: 0 1.5rem;
+    font-size: 1.5rem;
+  }
+  h1 {
+    width: 100%;
+    font-size: 2.5rem;
+  }
+  input {
+    width: 75%;
+  }
+  label {
+    font-size: 1.5rem;
+  }
 }

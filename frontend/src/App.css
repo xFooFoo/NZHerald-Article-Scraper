@@ -91,22 +91,27 @@ button {
     font-size: 1.5rem; 
   }
   .footerStyle {
-    font-size: 0.8rem;
+    font-size: 1rem;
     padding: 0 12px;
     padding-bottom: env(safe-area-inset-bottom);
   }
   .sentenceStyle {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
   }
   h1 {
     width: 100%;
-    font-size: 2rem;
+    font-size: 3rem;
   }
   input {
     width: 75%;
   }
   label {
-    font-size: 1.2rem;
+    font-size: 2rem;
+  }
+  button {
+    width: 120px;
+    height: 60px;
+    font-size: 20px;
   }
 }
 
@@ -117,21 +122,26 @@ button {
     font-size: 1.5rem;
   }
   .footerStyle {
-    font-size: 1rem;
+    font-size: 1.2rem;
     padding: 0 12px;
     padding-bottom: env(safe-area-inset-bottom);
   }
   .sentenceStyle {
-    font-size: 1.3rem;
+    font-size: 1.625rem;
   }
   h1 {
     width: 100%;
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
   input {
     width: 75%;
   }
   label {
-    font-size: 1.5rem;
+    font-size: 2.5rem;
+  }
+  button {
+    width: 140px;
+    height: 70px;
+    font-size: 24px;
   }
 }

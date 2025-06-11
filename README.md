@@ -1,14 +1,14 @@
 This script scrapes any NZ Herald article and outputs the content to a text file. 
 
+# Directly use my webapp hosted on: 
+https://nzherald.vercel.app/
+
 # Instructions
 - ```pip install beautifulsoup4```
 - ```pip install requests ```
 - ```pip install docx```
 - For the backend, all the dependencies are in requirements.txt
 - Clone the repository
-
-# Directly use my webapp hosted on: 
-```https://nzherald.vercel.app/```
 
 # Running the backend server
 - ```cd NZHerald Article Scraper\backend```

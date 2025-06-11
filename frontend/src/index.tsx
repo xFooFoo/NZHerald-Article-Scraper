@@ -8,9 +8,12 @@ const container = document.getElementById('root') as HTMLElement;
 const root = ReactDOM.createRoot(container);
 
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></meta>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </>
 );
 
 // If you want to start measuring performance in your app, pass a function

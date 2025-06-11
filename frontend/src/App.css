@@ -30,7 +30,7 @@ body, html{
   text-align: left;
   line-height: 1.5rem;
   padding: 0 12px 6px;
-  flex: 1; /* This pushes the footer down */
+  flex: 1 1 auto; /* This pushes the footer down */
   border: 1px solid white;
   border-radius: 16px;
 }

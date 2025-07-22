@@ -7,24 +7,6 @@ from bs4 import BeautifulSoup
 def scrapeContent(url):
     response = requests.get(url)
     content = []
-    # file_type = '.docx' #feel free to replace this with .doc, .docx, .txt etc...
-
-    # def writeToTxtFile(file_path, content):
-    #     with open(file_path, 'w', encoding='utf-8', newline='') as file:
-    #         # Write the content to the same location as the script
-    #         file.write(content)
-
-    # def writeToDocxFile(file_path, content):
-    #     doc = Document()
-    #     doc.add_heading(title, level=1)
-    #     for paragraph in content.strip().split('\n\n'):
-    #         doc.add_paragraph(paragraph)
-    #     doc.save(file_path)
-
-    # writeToFile = {
-    #     ".docx": writeToDocxFile,
-    #     ".txt": writeToTxtFile,
-    # }
 
     # Check if the request was successful
     if response.status_code == 200:

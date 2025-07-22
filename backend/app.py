@@ -27,7 +27,8 @@ def scrape_data():
             "content": content
         }), 200
     except Exception as e:
-        return jsonify({"fetchStatus": f"Error: Invalid URL {url} 💀💀💀"}), 500
+
+        return jsonify({"fetchStatus": f"Error when fetching article from {url}:\n {e.text} 💀💀💀"}), 500
 
 def scrapeContent(url):
     response = requests.get(url)
@@ -35,7 +36,13 @@ def scrapeContent(url):
 
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        title = str(soup.find(class_='article__heading').text)
+
+        # Title Portion
+        heading = soup.select_one('h1[data-test-ui="article__heading"]')
+        if heading:
+            title = heading.text 
+        else:
+            title = "Title not found"
 
         parent_section = soup.select_one('section[data-test-ui="article__body"]')
         if parent_section:

@@ -35,7 +35,12 @@ if response.status_code == 200:
     soup = BeautifulSoup(response.text, 'html.parser')
 
     # Title Portion
-    title = str(soup.find(class_='article__heading').text)
+    heading = soup.select_one('h1[data-test-ui="article__heading"]')
+    if heading:
+        title = heading.text 
+    else:
+        title = "Title not found"
+        
     content += "Title: " + title + "\n\n"
 
     # Sometimes the article only has one body section

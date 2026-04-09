@@ -24,6 +24,11 @@ Directly use my webapp hosted on: https://nzherald.vercel.app/
 - Enter the NZH article URL
 - The article is now downloaded to the same location as the script (path displayed in terminal)
 
+## Production Deployment to Vercel
+- To update your Production Deployment, push to the main branch.
+- Deploy ```/backend``` folder to nzherald
+- Deploy ```/frontend``` folder to nzherald-server
+
 ### Technologies used:
 - Python 3.8.3
 - Flask (Handles server routing and request-response logic. send_from_directory is used to serve the React Build)

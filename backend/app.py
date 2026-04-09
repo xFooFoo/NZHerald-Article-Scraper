@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from bs4 import BeautifulSoup
 import requests
@@ -28,12 +28,27 @@ def scrape_data():
         }), 200
     except Exception as e:
 
-        return jsonify({"fetchStatus": f"Error when fetching article from {url}:\n {e.text} 💀💀💀"}), 500
+        return jsonify({"fetchStatus": f"Error when fetching article from {url}:\n {str(e)} 💀💀💀"}), 500
+
+def returnTagText(article_sections):
+    content = []
+    for article_section in article_sections:
+        if article_section:
+            article_lines = article_section.find_all(['p', 'li'])
+            for line in article_lines:
+                content.append(line.text)
+    return content
 
 def scrapeContent(url):
-    response = requests.get(url)
+    title = "Title not found"
     content = []
-
+    
+    try:
+        response = requests.get(url, timeout=10)
+    except requests.RequestException as err:
+        print(f"Request failed: {err}")
+        return title, content
+    
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -41,29 +56,16 @@ def scrapeContent(url):
         heading = soup.select_one('h1[data-test-ui="article__heading"]')
         if heading:
             title = heading.text 
-        else:
-            title = "Title not found"
 
-        parent_section = soup.select_one('section[data-test-ui="article__body"]')
-        if parent_section:
-            paragraphs = parent_section.find_all('p')
-            for paragraph in paragraphs:
-                content.append(paragraph.text)
-
-        parent_section = soup.select_one('section[data-test-ui="article-top-body"]')
-        if parent_section:
-            paragraphs = parent_section.find_all('p')
-            for paragraph in paragraphs:
-                content.append(paragraph.text)
-
-        parent_section = soup.select_one('section[data-test-ui="article-bottom-body"]')
-        if parent_section:
-            paragraphs = parent_section.find_all('p')
-            for paragraph in paragraphs:
-                content.append(paragraph.text)
+        article_sections = [soup.select_one('section[data-test-ui="article__body"]'),
+                            soup.select_one('section[data-test-ui="article-top-body"]'),
+                            soup.select_one('section[data-test-ui="article-bottom-body"]')]
+        content = returnTagText(article_sections)
     else:
         print(f"Failed to retrieve the page. Status code: {response.status_code}")
+        
     return title, content
+
 if __name__ == '__main__':
     print("Starting Flask server...")
     app.run()

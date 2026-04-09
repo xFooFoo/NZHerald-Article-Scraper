@@ -30,11 +30,17 @@ def scrape_data():
 
         return jsonify({"fetchStatus": f"Error when fetching article from {url}:\n {str(e)} 💀💀💀"}), 500
 
+def is_wanted_element(elem):
+    # Remove social link buttons/list items
+    if elem.name == 'li' and elem.find('button', attrs={'data-test-ui': lambda x: x and 'social-link' in x}):
+        return False
+    return True  # Keep p or other li
+
 def returnTagText(article_sections):
     content = []
     for article_section in article_sections:
         if article_section:
-            article_lines = article_section.find_all(['p', 'li'])
+            article_lines = list(filter(is_wanted_element, article_section.find_all(['p', 'li'])))
             for line in article_lines:
                 content.append(line.text)
     return content

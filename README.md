@@ -25,9 +25,10 @@ Directly use my webapp hosted on: https://nzherald.vercel.app/
 - The article is now downloaded to the same location as the script (path displayed in terminal)
 
 ## Production Deployment to Vercel
-- To update your Production Deployment, push to the main branch.
-- Deploy ```/backend``` folder to nzherald
-- Deploy ```/frontend``` folder to nzherald-server
+- To update your Production Deployment automatically, push to the main branch.
+- Any feature branch is deployed to a preview...
+- Deploy ```/backend``` folder to [nzherald](https://vercel.com/xfoofoos-projects/nzherald)
+- Deploy ```/frontend``` folder to [nzherald-server](https://vercel.com/xfoofoos-projects/nzherald-server)
 
 ### Technologies used:
 - Python 3.8.3

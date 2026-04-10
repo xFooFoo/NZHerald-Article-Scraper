@@ -4,7 +4,7 @@ import { ContentItem } from './types/ContentItem'
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 
 function App() {
-  const API_BASE_URL = 'http://localhost:5000'; //'https://nzherald-server.vercel.app' // 
+  const API_BASE_URL = 'https://nzherald-server.vercel.app' //'http://localhost:5000'; 
   const [url, setUrl] = useState<string>('');
   const [fetchStatus, setFetchStatus] = useState<string>('');
   const [title, setTitle] = useState<string>('');

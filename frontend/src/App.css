@@ -79,6 +79,15 @@ button {
   background-color: darkgreen;
 }
 
+img { 
+  max-width: 100%; 
+  height: auto; 
+}
+
+figcaption {
+  font-size: .875rem;
+}
+
 .sentenceStyle {
   font-family: Inter-variable, Arial, Helvetica, sans-serif;
   font-size: 16px;
@@ -130,6 +139,11 @@ button {
     height: 60px;
     font-size: 20px;
   }
+
+  img { 
+    max-width: 100%; 
+    height: auto; 
+  }
 }
 
 @media (min-width: 600px) and (max-width: 1280px) {
@@ -159,6 +173,11 @@ button {
     height: 60px;
     padding: 0 10px;
     font-size: 1.5rem;
+  }
+
+  img { 
+    max-width: 100%; 
+    height: auto; 
   }
 
   label {

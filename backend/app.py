@@ -31,6 +31,9 @@ def scrape_data():
         return jsonify({"fetchStatus": f"Error when fetching article from {url}:\n {str(e)} 💀💀💀"}), 500
 
 def is_wanted_element(elem):
+    # Onlt include images with a source
+    if elem.name == 'img':
+        return 'src' in elem.attrs
     # Remove social link buttons/list items
     if elem.name == 'li' and elem.find('button', attrs={'data-test-ui': lambda x: x and 'social-link' in x}):
         return False
@@ -43,9 +46,19 @@ def returnTagText(article_sections):
     content = []
     for article_section in article_sections:
         if article_section:
-            article_lines = list(filter(is_wanted_element, article_section.find_all(['p', 'li'])))
-            for line in article_lines:
-                content.append(line.text)
+            article_elements = list(filter(is_wanted_element, article_section.find_all(['p', 'li', 'img'])))
+            for elem in article_elements:
+                if elem.name == 'p' or elem.name == 'li':
+                    content.append({'type': 'text', 'content': elem.text})
+                elif elem.name == 'img':
+                    caption = None
+                    alt = elem.get('alt', "Image goes here")
+                    figure = elem.find_parent('figure')
+                    if figure:
+                        figcaption = figure.find('figcaption')
+                        if figcaption:
+                            caption = figcaption.text.strip()
+                    content.append({'type': 'image', 'src': elem.get("data-src") or elem['src'], 'srcset': elem.get("data-srcset") or elem.get("srcset"), 'alt': alt, 'caption': caption})
     return content
 
 def scrapeContent(url):

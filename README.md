@@ -5,16 +5,18 @@ Directly use my webapp hosted on: https://nzherald.vercel.app/
 - ```pip install beautifulsoup4```
 - ```pip install requests ```
 - ```pip install docx```
-- For the backend, all the dependencies are in requirements.txt
 - Clone the repository
 
 ## Running the backend server
 - ```cd NZHerald Article Scraper\backend```
+- ```pip install -r requirements.txt```
 - ```python app.py```
 
 ## Running the front end locally
 - ```cd NZHerald Article Scraper\frontend```
-- ```npm run start```
+- ```npm run build```
+- ```npm install -g serve```
+- ```serve -s build -l 3000```
 - Enter the NZH article URL
 - Article content is displayed to the screen
 
@@ -34,6 +36,7 @@ Directly use my webapp hosted on: https://nzherald.vercel.app/
 - Python 3.8.3
 - Flask (Handles server routing and request-response logic. send_from_directory is used to serve the React Build)
 - React (front end)
+- serve (host frontend locally)
 - Beautiful Soup 4 (Webscraping Library)
 - python-docx (to write DOCX content)
 - requests (to send HTTP requests)

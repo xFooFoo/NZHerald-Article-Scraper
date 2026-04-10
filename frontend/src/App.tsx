@@ -1,12 +1,14 @@
 import './App.css';
+import { ContentItem } from './types/ContentItem'
+
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 
 function App() {
-  const API_BASE_URL = 'https://nzherald-server.vercel.app' // 'http://localhost:5000';
+  const API_BASE_URL = 'http://localhost:5000'; //'https://nzherald-server.vercel.app' // 
   const [url, setUrl] = useState<string>('');
   const [fetchStatus, setFetchStatus] = useState<string>('');
   const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string[]>([]);
+  const [content, setContent] = useState<ContentItem[]>([]);
 
   // Handle input changes
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -62,9 +64,21 @@ function App() {
         <h3>{fetchStatus}</h3>
         <div className='contentContainer'>
           <h1 className='titleStyle'>{title}</h1>
-          {Array.isArray(content) && content.map((sentence, index) => (
-            <p className='sentenceStyle' key={index}>{sentence}</p>
-          ))}
+          {content.map((item, index) => {
+            if (item.type === 'text') {
+              return <p className='sentenceStyle' key={index}>{item.content}</p>;
+            } else if (item.type === 'image') {
+              return (
+                <figure key={index}>
+                  <img src={item.src} srcSet={item.srcset || ""} alt={item.alt} />
+                  {item.caption && (
+                    <figcaption>{item.caption}</figcaption>
+                  )}
+                </figure>
+              )
+            }
+            return null; // Fallback for unknown types, nothing will be rendered
+          })}
         </div>
         <footer className='footerStyle'>
           <p>developed by foofoo for educational purposes - don't sue me pls</p>

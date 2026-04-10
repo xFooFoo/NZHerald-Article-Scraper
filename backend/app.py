@@ -34,6 +34,9 @@ def is_wanted_element(elem):
     # Remove social link buttons/list items
     if elem.name == 'li' and elem.find('button', attrs={'data-test-ui': lambda x: x and 'social-link' in x}):
         return False
+    # Viva premium articles with data-test-ui="article__action-bar" has this
+    if elem.name == 'p' and 'Share this article:' in elem.text:
+        return False
     return True  # Keep p or other li
 
 def returnTagText(article_sections):
@@ -61,8 +64,14 @@ def scrapeContent(url):
         # Title Portion
         heading = soup.select_one('h1[data-test-ui="article__heading"]')
         if heading:
-            title = heading.text 
+            title = heading.text
+        else:
+            viva_heading = soup.select_one('h1[data-test-ui="viva-article__heading"]')
+            if viva_heading:
+                title = viva_heading.text
+            
 
+        # Main sections containing actual article content we want to scrape
         article_sections = [soup.select_one('section[data-test-ui="article__body"]'),
                             soup.select_one('section[data-test-ui="article-top-body"]'),
                             soup.select_one('section[data-test-ui="article-bottom-body"]')]

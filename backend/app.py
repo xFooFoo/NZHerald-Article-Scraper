@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from bs4 import BeautifulSoup
 import requests
+import urllib.parse
 
 app = Flask(__name__)
 CORS(app) 
@@ -15,20 +16,26 @@ def scrape_data():
     try:
         data = request.get_json()  # Get the JSON data from the request body
         url = data.get('url')  # Access the value sent from React
+        
+        # Normalize the URL
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+        
+        # Check domain/host of the URL
+        parsed = urllib.parse.urlparse(url)
+        if parsed.netloc not in ['www.nzherald.co.nz', 'nzherald.co.nz']:
+            return jsonify({"fetchStatus": "Please enter a valid NZ Herald Article URL 🙏"}), 400
+
         title, content = scrapeContent(url)
         
-        # Some url/content checks
-        if not url.startswith("https://www.nzherald.co.nz/"):
-            return jsonify({"fetchStatus": "Please enter a valid NZHerald Article URL 🙏🙏🙏"}), 400
-
         if not content:
-            return jsonify({"fetchStatus": "No content found in the article. Please check the URL 🙏"}), 400
+            return jsonify({"fetchStatus": "No content found in the article 😞"}), 204
         
         print(f"Received value: {url}")
         
         # Respond with a success message
         return jsonify({
-            "fetchStatus": "Article scraped successfully!!! 😁😁😁",
+            "fetchStatus": "Article scraped successfully! 😁",
             "title": title,
             "content": content
         }), 200

@@ -18,7 +18,7 @@ def scrape_data():
         title, content = scrapeContent(url)
         
         # Some url/content checks
-        if not url.startsWith("https://www.nzherald.co.nz/"):
+        if not url.startswith("https://www.nzherald.co.nz/"):
             return jsonify({"fetchStatus": "Please enter a valid NZHerald Article URL 🙏🙏🙏"}), 400
 
         if not content:
@@ -33,8 +33,8 @@ def scrape_data():
             "content": content
         }), 200
     except Exception as e:
-
-        return jsonify({"fetchStatus": f"Error when fetching article from {url}:\n {e.text} 💀💀💀"}), 500
+        print(f"Unexpected Exception {str(e)}")
+        return jsonify({"fetchStatus": f"Error when fetching article from {url} 💀💀💀"}), 500
 
 def scrapeContent(url):
     response = requests.get(url)

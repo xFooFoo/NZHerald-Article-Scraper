@@ -16,8 +16,14 @@ def scrape_data():
         data = request.get_json()  # Get the JSON data from the request body
         url = data.get('url')  # Access the value sent from React
         title, content = scrapeContent(url)
+        
+        # Some url/content checks
+        if not url.startswith("https://www.nzherald.co.nz/"):
+            return jsonify({"fetchStatus": "Please enter a valid NZHerald Article URL 🙏🙏🙏"}), 400
 
-        # You can now process the data (e.g., store in a database, etc.)
+        if not content:
+            return jsonify({"fetchStatus": "No content found in the article. Please check the URL 🙏"}), 400
+        
         print(f"Received value: {url}")
         
         # Respond with a success message

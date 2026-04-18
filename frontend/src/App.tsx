@@ -4,7 +4,10 @@ import { ContentItem } from './types/ContentItem'
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 
 function App() {
-  const API_BASE_URL = 'https://nzherald-server.vercel.app' //'http://localhost:5000'; 
+  // Dynamically set API_BASE_URL based on environment
+  const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:5000' 
+    : 'https://nzherald-server.vercel.app';
   const [url, setUrl] = useState<string>('');
   const [fetchStatus, setFetchStatus] = useState<string>('');
   const [title, setTitle] = useState<string>('');
@@ -32,12 +35,18 @@ function App() {
       })
 
       const data = await response.json() // Get the response data
-      setContent(data.content) // Store the received value in state
-      setTitle(data.title)
-      setFetchStatus(data.fetchStatus)
-      setUrl('') // Clear the input after submission
+      if (response.ok) {
+        setContent(data.content || [])
+        setTitle(data.title || '')
+        setFetchStatus(data.fetchStatus)
+        setUrl('') // Clear the input after submission
+      } else {
+        setFetchStatus(data.fetchStatus || 'An error occurred')
+        setContent([])
+        setTitle('')
+      }
     } catch (error) {
-      console.error('Error:', error);
+        console.error('Error:', error);
     }
   };
 

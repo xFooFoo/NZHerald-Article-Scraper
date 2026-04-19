@@ -88,6 +88,10 @@ figcaption {
   font-size: .875rem;
 }
 
+a {
+  color: cornflowerblue;
+}
+
 .sentenceStyle {
   font-family: Inter-variable, Arial, Helvetica, sans-serif;
   font-size: 16px;

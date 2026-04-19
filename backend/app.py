@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString, Tag
 import requests
 import urllib.parse
 
@@ -43,6 +43,7 @@ def scrape_data():
 
         return jsonify({"fetchStatus": f"Error when fetching article from {url}:\n {str(e)} 💀💀💀"}), 500
 
+# Filtering only wanted HTML elements
 def is_wanted_element(elem):
     # Onlt include images with a source
     if elem.name == 'img':
@@ -55,6 +56,24 @@ def is_wanted_element(elem):
         return False
     return True  # Keep p or other li
 
+# Serializing <p>/<li> tags' content into text to be rendered as HTML in frontend
+def serialize_paragraph(elem: Tag):
+    parts = []
+    for child in elem.children:
+        if isinstance(child, NavigableString):
+            parts.append(str(child))
+        elif child.name == 'a':
+            href = child.get('href')
+            text = child.string or child.get_text(strip=True)
+            if href:
+                parts.append(f'<a href="{href}" target="_blank" rel="noreferrer">{text}</a>')
+            else:
+                parts.append(text)
+        else:
+            parts.append(child.get_text())
+    return ''.join(parts)
+
+# Handles retrieving the text for all kinds of HTML tags
 def returnTagText(article_sections):
     content = []
     for article_section in article_sections:
@@ -62,7 +81,7 @@ def returnTagText(article_sections):
             article_elements = list(filter(is_wanted_element, article_section.find_all(['p', 'li', 'img'])))
             for elem in article_elements:
                 if elem.name == 'p' or elem.name == 'li':
-                    content.append({'type': 'text', 'content': elem.text})
+                    content.append({'type': 'text', 'content': elem.decode_contents()})
                 elif elem.name == 'img':
                     caption = None
                     alt = elem.get('alt', "Image goes here")
@@ -74,6 +93,7 @@ def returnTagText(article_sections):
                     content.append({'type': 'image', 'src': elem.get("data-src") or elem['src'], 'srcset': elem.get("data-srcset") or elem.get("srcset"), 'alt': alt, 'caption': caption})
     return content
 
+# Determines which sections of the article to scrape
 def scrapeContent(url):
     title = "Title not found"
     content = []

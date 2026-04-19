@@ -1,5 +1,4 @@
-This script scrapes any NZ Herald article and outputs the content to a text file. 
-Directly use my webapp hosted on: https://nzherald.vercel.app/
+Scrape any NZHerald article using --> https://nzherald.vercel.app/
 
 # Instructions
 - ```pip install beautifulsoup4```
@@ -14,9 +13,9 @@ Directly use my webapp hosted on: https://nzherald.vercel.app/
 
 ## Running the front end locally
 - ```cd NZHerald Article Scraper\frontend```
-- ```npm run build```
+- Compile the code: ```npm run build```
 - ```npm install -g serve```
-- ```serve -s build -l 3000```
+- Run the app on localhost port 3000: ```serve -s build -l 3000```
 - Enter the NZH article URL
 - Article content is displayed to the screen
 

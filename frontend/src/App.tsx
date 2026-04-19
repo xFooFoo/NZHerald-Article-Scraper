@@ -75,7 +75,11 @@ function App() {
           <h1 className='titleStyle'>{title}</h1>
           {content.map((item, index) => {
             if (item.type === 'text') {
-              return <p className='sentenceStyle' key={index}>{item.content}</p>;
+              return <p 
+                      className='sentenceStyle'
+                      key={index}
+                      dangerouslySetInnerHTML={{ __html: item.content }}>
+                     </p>;
             } else if (item.type === 'image') {
               return (
                 <figure key={index}>

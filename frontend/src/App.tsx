@@ -11,6 +11,7 @@ function App() {
   const [url, setUrl] = useState<string>('');
   const [fetchStatus, setFetchStatus] = useState<string>('');
   const [title, setTitle] = useState<string>('');
+  const [author, setAuthor] = useState<ContentItem[]>([]);
   const [content, setContent] = useState<ContentItem[]>([]);
 
   // Handle input changes
@@ -37,12 +38,14 @@ function App() {
       const data = await response.json() // Get the response data
       if (response.ok) {
         setContent(data.content || [])
+        setAuthor(data.author || [])
         setTitle(data.title || '')
         setFetchStatus(data.fetchStatus)
         setUrl('') // Clear the input after submission
       } else {
         setFetchStatus(data.fetchStatus || 'An error occurred')
         setContent([])
+        setAuthor([])
         setTitle('')
       }
     } catch (error) {

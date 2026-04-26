@@ -26,7 +26,7 @@ def scrape_data():
         if parsed.netloc not in ['www.nzherald.co.nz', 'nzherald.co.nz']:
             return jsonify({"fetchStatus": "Please enter a valid NZ Herald Article URL 🙏"}), 400
 
-        title, content = scrapeContent(url)
+        title, author, content = scrapeContent(url)
         
         if not content:
             return jsonify({"fetchStatus": "No content found in the article 😞"}), 204
@@ -81,13 +81,13 @@ def returnTagText(article_sections):
             article_elements = list(filter(is_wanted_element, article_section.find_all(['p', 'li', 'img'])))
             for elem in article_elements:
                 if elem.name == 'p' or elem.name == 'li':
-                    content.append({'type': 'text', 'content': elem.decode_contents()})
+                    content.append(returnElementTextContent(elem))
                 elif elem.name == 'img':
                     content.append(returnImageContent(elem))
     return content
 
-
-## TODO: create a "returnTagText" function for author--information
+def returnElementTextContent(elem):
+    return {'type': 'text', 'content': elem.decode_contents()}
 
 def returnImageContent(elem):
     caption = None
@@ -109,8 +109,21 @@ def scrapeTitle(soup):
             return viva_heading.text
 
 def scrapeAuthor(soup):
-    author_section = soup.select_one('div[data-test-ui="author--information"]')
-    return returnTagText(author_section)
+    content = []
+    
+    author_img = soup.select_one('img[data-test-ui="author--details__image"]')
+    author_role = soup.select_one('span[data-test-ui="author--role"]')
+    author_distributor_name = soup.select_one('span[data-test-ui="distributor--name"]')
+    author_display_date = soup.select_one('time[data-test-ui="author-display--date"]')
+    author_read_time = soup.select_one('span[data-test-ui="author-read-time"]')
+    
+    author_elements = [author_role, author_distributor_name, author_display_date, author_read_time]
+    
+    content.append(returnImageContent(author_img))
+    for elem in author_elements:
+        content.append(returnElementTextContent(elem))
+        
+    return content
 
 # Determines which sections of the article to scrape
 def scrapeContent(url):
@@ -140,7 +153,7 @@ def scrapeContent(url):
     else:
         print(f"Failed to retrieve the page. Status code: {response.status_code}")
         
-    return title, (author + content)
+    return title, author, content
 
 if __name__ == '__main__':
     print("Starting Flask server...")

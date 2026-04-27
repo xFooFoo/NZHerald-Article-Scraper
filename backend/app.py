@@ -26,7 +26,7 @@ def scrape_data():
         if parsed.netloc not in ['www.nzherald.co.nz', 'nzherald.co.nz']:
             return jsonify({"fetchStatus": "Please enter a valid NZ Herald Article URL 🙏"}), 400
 
-        title, content = scrapeContent(url)
+        title, author, content = scrapeContent(url)
         
         if not content:
             return jsonify({"fetchStatus": "No content found in the article 😞"}), 204
@@ -37,6 +37,7 @@ def scrape_data():
         return jsonify({
             "fetchStatus": "Article scraped successfully! 😁",
             "title": title,
+            "author": author,
             "content": content
         }), 200
     except Exception as e:
@@ -81,16 +82,56 @@ def returnTagText(article_sections):
             article_elements = list(filter(is_wanted_element, article_section.find_all(['p', 'li', 'img'])))
             for elem in article_elements:
                 if elem.name == 'p' or elem.name == 'li':
-                    content.append({'type': 'text', 'content': elem.decode_contents()})
+                    content.append(returnElementTextContent(elem))
                 elif elem.name == 'img':
-                    caption = None
-                    alt = elem.get('alt', "Image goes here")
-                    figure = elem.find_parent('figure')
-                    if figure:
-                        figcaption = figure.find('figcaption')
-                        if figcaption:
-                            caption = figcaption.text.strip()
-                    content.append({'type': 'image', 'src': elem.get("data-src") or elem['src'], 'srcset': elem.get("data-srcset") or elem.get("srcset"), 'alt': alt, 'caption': caption})
+                    content.append(returnImageContent(elem))
+    return content
+
+def returnElementTextContent(elem, subtype=None):
+    if not elem: return None
+    return {'type': 'text', 'subtype': subtype, 'content': elem.decode_contents()}
+
+def returnImageContent(elem, subtype=None):
+    if not elem: return None
+    caption = None
+    alt = elem.get('alt', "Image goes here")
+    figure = elem.find_parent('figure')
+    if figure:
+        figcaption = figure.find('figcaption')
+        if figcaption:
+            caption = figcaption.text.strip()
+    return {'type': 'image', 'subtype': subtype, 'src': elem.get("data-src") or elem['src'], 'srcset': elem.get("data-srcset") or elem.get("srcset"), 'alt': alt, 'caption': caption}
+                    
+def scrapeTitle(soup):
+    title_section = soup.select_one('h1[data-test-ui="article__heading"]')
+    if title_section:
+        return title_section.text
+    else:
+        viva_heading = soup.select_one('h1[data-test-ui="viva-article__heading"]')
+        if viva_heading:
+            return viva_heading.text
+
+def scrapeAuthor(soup):    
+    author_img = soup.select_one('img[data-test-ui="author--details__image"]')
+    author_link = soup.select_one('a[data-test-ui="author--link"]')
+    author_role = soup.select_one('span[data-test-ui="author--role"]')
+    author_distributor_name = soup.select_one('span[data-test-ui="distributor--name"]')
+    author_display_date = soup.select_one('time[data-test-ui="author-display--date"]')
+    author_read_time = soup.select_one('span[data-test-ui="author-read-time"]')
+    
+    content = []
+    author_elements = [
+        ('author--link', author_link),
+        ('author--role', author_role),
+        ('distributor--name', author_distributor_name),
+        ('author-display--date', author_display_date),
+        ('author-read-time', author_read_time)
+    ]
+    
+    content.append(returnImageContent(author_img, "author--details__image"))
+    for subtype, elem in author_elements:
+        content.append(returnElementTextContent(elem, subtype))
+        
     return content
 
 # Determines which sections of the article to scrape
@@ -108,15 +149,11 @@ def scrapeContent(url):
         soup = BeautifulSoup(response.text, 'html.parser')
 
         # Title Portion
-        heading = soup.select_one('h1[data-test-ui="article__heading"]')
-        if heading:
-            title = heading.text
-        else:
-            viva_heading = soup.select_one('h1[data-test-ui="viva-article__heading"]')
-            if viva_heading:
-                title = viva_heading.text
-            
-
+        title = scrapeTitle(soup)
+        
+        # Author Portion
+        author = scrapeAuthor(soup)
+        
         # Main sections containing actual article content we want to scrape
         article_sections = [soup.select_one('section[data-test-ui="article__body"]'),
                             soup.select_one('section[data-test-ui="article-top-body"]'),
@@ -125,7 +162,7 @@ def scrapeContent(url):
     else:
         print(f"Failed to retrieve the page. Status code: {response.status_code}")
         
-    return title, content
+    return title, author, content
 
 if __name__ == '__main__':
     print("Starting Flask server...")

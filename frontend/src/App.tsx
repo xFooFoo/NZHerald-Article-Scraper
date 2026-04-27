@@ -1,5 +1,6 @@
 import './App.css';
-import { ContentItem } from './types/ContentItem'
+import { ContentItem, ContentItemImage, ContentItemText } from './types/ContentItem'
+import { APIResponse } from './types/APIResponse'
 
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 
@@ -11,6 +12,7 @@ function App() {
   const [url, setUrl] = useState<string>('');
   const [fetchStatus, setFetchStatus] = useState<string>('');
   const [title, setTitle] = useState<string>('');
+  const [author, setAuthor] = useState<ContentItem[]>([]);
   const [content, setContent] = useState<ContentItem[]>([]);
 
   // Handle input changes
@@ -34,15 +36,18 @@ function App() {
         }),
       })
 
-      const data = await response.json() // Get the response data
+      const data: APIResponse = await response.json() // Get the response data
       if (response.ok) {
         setContent(data.content || [])
+        setAuthor(data.author?.filter((elem): elem is ContentItem => elem != null) ?? []
+      )
         setTitle(data.title || '')
         setFetchStatus(data.fetchStatus)
         setUrl('') // Clear the input after submission
       } else {
         setFetchStatus(data.fetchStatus || 'An error occurred')
         setContent([])
+        setAuthor([])
         setTitle('')
       }
     } catch (error) {
@@ -73,6 +78,33 @@ function App() {
         <h3>{fetchStatus}</h3>
         <div className='contentContainer'>
           <h1 className='titleStyle'>{title}</h1>
+          {author.length > 0 &&
+            (<div className='authorContainer'>
+              {author
+                .filter(item => item.type === 'image')
+                .map((item, index) => (
+                  <div key={index} className="authorImageContainer">
+                    <figure>
+                      <img className="authorImage" src={(item as ContentItemImage).src} srcSet={(item as ContentItemImage).srcset || ""} alt={(item as ContentItemImage).alt} />
+                      {(item as ContentItemImage).caption && (
+                        <figcaption className="authorCaption">{(item as ContentItemImage).caption}</figcaption>
+                      )}
+                    </figure>
+                  </div>
+                ))}
+                <div className="authorTextContainer">
+                  {author
+                    .filter(item => item.type === 'text')
+                    .map((item, index) => (
+                      <p 
+                        className="authorText"
+                        key={index}
+                        dangerouslySetInnerHTML={{ __html: (item as ContentItemText).content }}>
+                      </p>
+                    ))}
+                </div>
+            </div>)
+          }
           {content.map((item, index) => {
             if (item.type === 'text') {
               return <p 
@@ -80,16 +112,7 @@ function App() {
                       key={index}
                       dangerouslySetInnerHTML={{ __html: item.content }}>
                      </p>;
-            } else if (item.type === 'image') {
-              return (
-                <figure key={index}>
-                  <img src={item.src} srcSet={item.srcset || ""} alt={item.alt} />
-                  {item.caption && (
-                    <figcaption>{item.caption}</figcaption>
-                  )}
-                </figure>
-              )
-            }
+            } 
             return null; // Fallback for unknown types, nothing will be rendered
           })}
         </div>

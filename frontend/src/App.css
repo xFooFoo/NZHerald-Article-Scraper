@@ -39,6 +39,22 @@ html {
   border-radius: 16px;
 }
 
+.authorContainer {
+    display: flex;
+    padding: 0.5rem 0rem;
+    grid-template-columns: auto 1fr; /* First column auto-sized for image, second fills remaining space */
+    gap: 1rem; /* Space between columns */
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0rem 1rem;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+
+.authorTextContainer {
+  padding: 1rem 0rem;
+}
+
 .titleStyle {
   text-align: center;
   font-weight: 650;
@@ -105,11 +121,39 @@ a {
   text-align: center;
 }
 
+.authorImage {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 9999px;
+  border-style: none;
+}
+
+.authorText {
+  size: 1rem;
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  unicode-bidi: isolate;
+}
+
 @media (max-width: 600px) {
   .contentContainer {
     width: 90%;
     padding: 0 1rem;
     font-size: 1.5rem;
+  }
+
+  .authorContainer {
+    display: flex;
+    padding: 0.5rem 0rem;
+    grid-template-columns: auto 1fr; /* First column auto-sized for image, second fills remaining space */
+    gap: 1rem; /* Space between columns */
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0rem 1rem;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
   }
 
   .footerStyle {
@@ -120,6 +164,10 @@ a {
 
   .sentenceStyle {
     font-size: 1rem;
+  }
+
+  .authorText {
+    font-size: 0.75rem;
   }
 
   h1 {
@@ -157,6 +205,18 @@ a {
     font-size: 1.5rem;
   }
 
+  .authorContainer {
+    display: flex;
+    padding: 0.5rem 0rem;
+    grid-template-columns: auto 1fr; /* First column auto-sized for image, second fills remaining space */
+    gap: 1rem; /* Space between columns */
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0rem 1rem;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+
   .footerStyle {
     font-size: 1.2rem;
     padding: 0 12px;
@@ -165,6 +225,10 @@ a {
 
   .sentenceStyle {
     font-size: 1.5rem;
+  }
+
+  .authorText {
+    font-size: 1rem;
   }
 
   h1 {

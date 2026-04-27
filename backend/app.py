@@ -37,6 +37,7 @@ def scrape_data():
         return jsonify({
             "fetchStatus": "Article scraped successfully! 😁",
             "title": title,
+            "author": author,
             "content": content
         }), 200
     except Exception as e:
@@ -86,10 +87,12 @@ def returnTagText(article_sections):
                     content.append(returnImageContent(elem))
     return content
 
-def returnElementTextContent(elem):
-    return {'type': 'text', 'content': elem.decode_contents()}
+def returnElementTextContent(elem, subtype=None):
+    if not elem: return None
+    return {'type': 'text', 'subtype': subtype, 'content': elem.decode_contents()}
 
-def returnImageContent(elem):
+def returnImageContent(elem, subtype=None):
+    if not elem: return None
     caption = None
     alt = elem.get('alt', "Image goes here")
     figure = elem.find_parent('figure')
@@ -97,7 +100,7 @@ def returnImageContent(elem):
         figcaption = figure.find('figcaption')
         if figcaption:
             caption = figcaption.text.strip()
-    return {'type': 'image', 'src': elem.get("data-src") or elem['src'], 'srcset': elem.get("data-srcset") or elem.get("srcset"), 'alt': alt, 'caption': caption}
+    return {'type': 'image', 'subtype': subtype, 'src': elem.get("data-src") or elem['src'], 'srcset': elem.get("data-srcset") or elem.get("srcset"), 'alt': alt, 'caption': caption}
                     
 def scrapeTitle(soup):
     title_section = soup.select_one('h1[data-test-ui="article__heading"]')
@@ -108,20 +111,26 @@ def scrapeTitle(soup):
         if viva_heading:
             return viva_heading.text
 
-def scrapeAuthor(soup):
-    content = []
-    
+def scrapeAuthor(soup):    
     author_img = soup.select_one('img[data-test-ui="author--details__image"]')
+    author_link = soup.select_one('a[data-test-ui="author--link"]')
     author_role = soup.select_one('span[data-test-ui="author--role"]')
     author_distributor_name = soup.select_one('span[data-test-ui="distributor--name"]')
     author_display_date = soup.select_one('time[data-test-ui="author-display--date"]')
     author_read_time = soup.select_one('span[data-test-ui="author-read-time"]')
     
-    author_elements = [author_role, author_distributor_name, author_display_date, author_read_time]
+    content = []
+    author_elements = [
+        ('author--link', author_link),
+        ('author--role', author_role),
+        ('distributor--name', author_distributor_name),
+        ('author-display--date', author_display_date),
+        ('author-read-time', author_read_time)
+    ]
     
-    content.append(returnImageContent(author_img))
-    for elem in author_elements:
-        content.append(returnElementTextContent(elem))
+    content.append(returnImageContent(author_img, "author--details__image"))
+    for subtype, elem in author_elements:
+        content.append(returnElementTextContent(elem, subtype))
         
     return content
 

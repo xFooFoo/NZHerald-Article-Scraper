@@ -7,16 +7,12 @@ import urllib.parse
 app = Flask(__name__)
 CORS(
     app,
-    resources={r"/*": {"origins": "https://nzherald.vercel.app"}},
+    resources={r"/*": {"origins": [
+        "https://nzherald.vercel.app",
+        "http://localhost:3000"
+    ]}},
     supports_credentials=False,
 )
-
-@app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "https://nzherald.vercel.app"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    return response
 
 @app.route('/')
 def serve_index():
@@ -26,7 +22,7 @@ def serve_index():
 def scrape_data():
     try:
         data = request.get_json()  # Get the JSON data from the request body
-        url = data.get('url')  # Access the value sent from React
+        url = data.get('url', 'unknown')  # Access the value sent from React
         
         # Normalize the URL
         if not url.startswith(('http://', 'https://')):
@@ -40,7 +36,12 @@ def scrape_data():
         title, author, content = scrapeContent(url)
         
         if not content:
-            return jsonify({"fetchStatus": "No content found in the article 😞"}), 204
+            return jsonify({
+            "fetchStatus": "No content found in the article 😞",
+            "title": title,
+            "author": author,
+            "content": []
+        }), 200
         
         print(f"Received value: {url}")
         
@@ -54,15 +55,6 @@ def scrape_data():
     except Exception as e:
 
         return jsonify({"fetchStatus": f"Error when fetching article from {url}:\n {str(e)} 💀💀💀"}), 500
-
-@app.route('/submit', methods=['OPTIONS'])
-def submit_options():
-    response = make_response()
-    response.headers["Access-Control-Allow-Origin"] = "https://nzherald.vercel.app"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
-    response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
-    return response, 204
-
 # Filtering only wanted HTML elements
 def is_wanted_element(elem):
     # Onlt include images with a source
@@ -187,6 +179,7 @@ def scrapeContent(url):
         #                     soup.select_one('div.article__raw-html')]
         
         article_sections = [*soup.select('section.article__body'), 
+                            soup.select_one('section.article-viva__body'), 
                             soup.select_one('div.article__raw-html')]
         content = returnTagText(article_sections)
     else:

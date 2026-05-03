@@ -117,7 +117,10 @@ function App() {
           })}
         </div>
         <footer className='footerStyle'>
-          <p>developed by foofoo for educational purposes - don't sue me pls</p>
+        <p>
+          This website is an independent project and is not affiliated with, endorsed by, or sponsored by NZ Herald.
+          All trademarks, logos, and content are the property of their respective owners. Any referenced articles or materials are displayed solely at the direction of the user and for informational purposes.</p>
+        <p>Developed by foofoo for educational purposes - don't sue me pls</p>
         </footer>
       </div>
     </>

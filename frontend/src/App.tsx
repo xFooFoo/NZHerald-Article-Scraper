@@ -112,12 +112,32 @@ function App() {
                       key={index}
                       dangerouslySetInnerHTML={{ __html: item.content }}>
                      </p>;
-            } 
+            } else if (item.type === 'image') {
+              return (
+                <figure key={index}>
+                  <img src={item.src} srcSet={item.srcset || ""} alt={item.alt} />
+                  {item.caption && (
+                    <figcaption>{item.caption}</figcaption>
+                  )}
+                </figure>
+              )
+            } else if (item.type === 'link-text') {
+              return <a 
+                  className='sentenceStyle'
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer">
+                  {item.content}
+                  </a>;
+            }
             return null; // Fallback for unknown types, nothing will be rendered
           })}
         </div>
         <footer className='footerStyle'>
-          <p>developed by foofoo for educational purposes - don't sue me pls</p>
+          <p>This website is an independent project and is not affiliated with, endorsed by, or sponsored by NZ Herald.
+            All trademarks, logos, and content are the property of their respective owners.</p>
+          <p>Any referenced articles or materials are displayed solely at the direction of the user and for informational purposes.</p>
+          <p>Developed by foofoo for educational purposes - don't sue me pls</p>
         </footer>
       </div>
     </>

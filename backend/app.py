@@ -55,24 +55,24 @@ def is_wanted_element(elem):
     # Viva premium articles with data-test-ui="article__action-bar" has this
     if elem.name == 'p' and 'Share this article:' in elem.text:
         return False
-    return True  # Keep p or other li
+    return True  # Keep all other tags in find_all()!
 
 # Serializing <p>/<li> tags' content into text to be rendered as HTML in frontend
-def serialize_paragraph(elem: Tag):
-    parts = []
-    for child in elem.children:
-        if isinstance(child, NavigableString):
-            parts.append(str(child))
-        elif child.name == 'a':
-            href = child.get('href')
-            text = child.string or child.get_text(strip=True)
-            if href:
-                parts.append(f'<a href="{href}" target="_blank" rel="noreferrer">{text}</a>')
-            else:
-                parts.append(text)
-        else:
-            parts.append(child.get_text())
-    return ''.join(parts)
+# def serialize_paragraph(elem: Tag):
+#     parts = []
+#     for child in elem.children:
+#         if isinstance(child, NavigableString):
+#             parts.append(str(child))
+#         elif child.name == 'a':
+#             href = child.get('href')
+#             text = child.string or child.get_text(strip=True)
+#             if href:
+#                 parts.append(f'<a href="{href}" target="_blank" rel="noreferrer">{text}</a>')
+#             else:
+#                 parts.append(text)
+#         else:
+#             parts.append(child.get_text())
+#     return ''.join(parts)
 
 # Handles retrieving the text for all kinds of HTML tags
 def returnTagText(article_sections):
@@ -83,6 +83,13 @@ def returnTagText(article_sections):
             for elem in article_elements:
                 if elem.name == 'p' or elem.name == 'li':
                     content.append(returnElementTextContent(elem))
+                # elif elem.name == 'a':
+                #     href = elem.get('href')
+                #     text = elem.string or elem.get_text(strip=True)
+                #     if href:
+                #         content.append({'type': 'link-text', 'subtype': None, 'href': href, 'content': text})
+                #     else:
+                #         content.append({'type': 'text', 'subtype': None, 'content': text})
                 elif elem.name == 'img':
                     content.append(returnImageContent(elem))
     return content
@@ -106,10 +113,10 @@ def scrapeTitle(soup):
     title_section = soup.select_one('h1[data-test-ui="article__heading"]')
     if title_section:
         return title_section.text
-    else:
-        viva_heading = soup.select_one('h1[data-test-ui="viva-article__heading"]')
-        if viva_heading:
-            return viva_heading.text
+    
+    viva_heading = soup.select_one('h1[data-test-ui="viva-article__heading"]')
+    if viva_heading:
+        return viva_heading.text
 
 def scrapeAuthor(soup):    
     author_img = soup.select_one('img[data-test-ui="author--details__image"]')
@@ -154,10 +161,14 @@ def scrapeContent(url):
         # Author Portion
         author = scrapeAuthor(soup)
         
-        # Main sections containing actual article content we want to scrape
-        article_sections = [soup.select_one('section[data-test-ui="article__body"]'),
-                            soup.select_one('section[data-test-ui="article-top-body"]'),
-                            soup.select_one('section[data-test-ui="article-bottom-body"]')]
+        #Main sections containing actual article content we want to scrape
+        # article_sections = [soup.select_one('section.article__body'), 
+        #                     soup.select_one('section[data-test-ui="article-top-body"]'),
+        #                     soup.select_one('section[data-test-ui="article-bottom-body"]'),
+        #                     soup.select_one('div.article__raw-html')]
+        
+        article_sections = [*soup.select('section.article__body'), 
+                            soup.select_one('div.article__raw-html')]
         content = returnTagText(article_sections)
     else:
         print(f"Failed to retrieve the page. Status code: {response.status_code}")

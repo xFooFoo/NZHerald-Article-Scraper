@@ -109,6 +109,10 @@ def returnElementTextContent(elem, subtype=None):
     if not elem: return None
     return {'type': 'text', 'subtype': subtype, 'content': elem.decode_contents()}
 
+def returnElementLinkTextContent(elem, subtype=None):
+    if not elem: return None
+    return {'type': 'link-text', 'href': elem.get("href"), 'subtype': subtype, 'content': elem.text}
+
 def returnImageContent(elem, subtype=None):
     if not elem: return None
     caption = None
@@ -137,9 +141,10 @@ def scrapeAuthor(soup):
     author_display_date = soup.select_one('time[data-test-ui="author-display--date"]')
     author_read_time = soup.select_one('span[data-test-ui="author-read-time"]')
     
+    
+    
     content = []
     author_elements = [
-        ('author--link', author_link),
         ('author--role', author_role),
         ('distributor--name', author_distributor_name),
         ('author-display--date', author_display_date),
@@ -147,6 +152,12 @@ def scrapeAuthor(soup):
     ]
     
     content.append(returnImageContent(author_img, "author--details__image"))
+    if not author_link:
+        author_link = {'type': 'text', 'subtype': 'author--link', 'content': 'NZ Herald'}
+        content.append(author_link)
+    else:
+        content.append(returnElementLinkTextContent(author_link))
+        
     for subtype, elem in author_elements:
         content.append(returnElementTextContent(elem, subtype))
         

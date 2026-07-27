@@ -1,202 +1,179 @@
-from flask import Flask, request, jsonify, render_template, make_response
+import requests
+import re
+import json
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from bs4 import BeautifulSoup, NavigableString, Tag
-import requests
 import urllib.parse
 
 app = Flask(__name__)
-CORS(
-    app,
-    resources={r"/*": {"origins": [
-        "https://nzherald.vercel.app",
-        "http://localhost:3000"
-    ]}},
-    supports_credentials=False,
-)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://nzherald.vercel.app"]}})
+
+@app.after_request
+def add_cors_headers(response):
+    origin = request.headers.get('Origin')
+    if origin in [
+        'http://localhost:3000',
+        'https://nzherald.vercel.app',
+    ]:
+        response.headers['Access-Control-Allow-Origin'] = origin
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 @app.route('/')
 def serve_index():
     return render_template('index.html'), 200 # React Entry point
 
+
 @app.route('/submit', methods=['POST'])
 def scrape_data():
     try:
-        data = request.get_json()  # Get the JSON data from the request body
-        url = data.get('url', 'unknown')  # Access the value sent from React
-        
-        # Normalize the URL
+        payload = request.get_json(silent=True) or {}
+        url = (payload.get('url') or '').strip()
+
+        if not url:
+            return jsonify({
+                "fetchStatus": "Please enter an NZ Herald article URL 🙏",
+                "content": [],
+                "author": [],
+                "title": ""
+            }), 400
+
         if not url.startswith(('http://', 'https://')):
             url = 'https://' + url
-        
-        # Check domain/host of the URL
+
         parsed = urllib.parse.urlparse(url)
         if parsed.netloc not in ['www.nzherald.co.nz', 'nzherald.co.nz']:
-            return jsonify({"fetchStatus": "Please enter a valid NZ Herald Article URL 🙏"}), 400
-
-        title, author, content = scrapeContent(url)
-        
-        if not content:
             return jsonify({
-            "fetchStatus": "No content found in the article 😞",
-            "title": title,
-            "author": author,
-            "content": []
-        }), 200
-        
-        print(f"Received value: {url}")
-        
-        # Respond with a success message
+                "fetchStatus": "Please enter a valid NZ Herald Article URL 🙏",
+                "content": [],
+                "author": [],
+                "title": ""
+            }), 400
+
+        headers = {
+            "User-Agent": "Mozilla/5.0"
+        }
+        html = requests.get(url, headers=headers, timeout=20).text
+
+        match = re.search(
+            r'Fusion\.globalContent=(\{.*?\});Fusion\.',
+            html,
+            re.DOTALL
+        )
+
+        if not match:
+            return jsonify({
+                "fetchStatus": "Could not find article content on that page 🙏",
+                "content": [],
+                "author": [],
+                "title": ""
+            }), 404
+
+        article_data = json.loads(match.group(1))
+
+        content = []
+        for element in article_data.get("elements", []):
+            extract_content(element, content)
+
+        title = (
+            article_data.get("title")
+            or article_data.get("meta", {}).get("title")
+            or article_data.get("headline")
+            or "NZ Herald Article"
+        )
+
+        author = []
+        raw_author = article_data.get("author") or article_data.get("authors") or []
+        if isinstance(raw_author, dict):
+            raw_author = [raw_author]
+
+        if isinstance(raw_author, list):
+            for person in raw_author:
+                if isinstance(person, dict):
+                    name = person.get("name") or person.get("title")
+                    if name:
+                        author.append({
+                            "type": "text",
+                            "subtype": None,
+                            "content": name
+                        })
+
         return jsonify({
-            "fetchStatus": "Article scraped successfully! 😁",
-            "title": title,
+            "fetchStatus": f"Fetched: {title}",
+            "content": content,
             "author": author,
-            "content": content
-        }), 200
+            "title": title
+        })
+    except requests.RequestException as e:
+        return jsonify({
+            "fetchStatus": f"Error when fetching article from {url}:\n {str(e)} 💀💀💀",
+            "content": [],
+            "author": [],
+            "title": ""
+        }), 500
     except Exception as e:
+        return jsonify({
+            "fetchStatus": f"Error when parsing article from {url}:\n {str(e)} 💀💀💀",
+            "content": [],
+            "author": [],
+            "title": ""
+        }), 500
 
-        return jsonify({"fetchStatus": f"Error when fetching article from {url}:\n {str(e)} 💀💀💀"}), 500
-# Filtering only wanted HTML elements
-def is_wanted_element(elem):
-    # Onlt include images with a source
-    if elem.name == 'img':
-        return 'src' in elem.attrs
-    # Remove social link buttons/list items
-    if elem.name == 'li' and elem.find('button', attrs={'data-test-ui': lambda x: x and 'social-link' in x}):
-        return False
-    # Viva premium articles with data-test-ui="article__action-bar" has this
-    if elem.name == 'p' and 'Share this article:' in elem.text:
-        return False
-    return True  # Keep all other tags in find_all()!
 
-# Serializing <p>/<li> tags' content into text to be rendered as HTML in frontend
-# def serialize_paragraph(elem: Tag):
-#     parts = []
-#     for child in elem.children:
-#         if isinstance(child, NavigableString):
-#             parts.append(str(child))
-#         elif child.name == 'a':
-#             href = child.get('href')
-#             text = child.string or child.get_text(strip=True)
-#             if href:
-#                 parts.append(f'<a href="{href}" target="_blank" rel="noreferrer">{text}</a>')
-#             else:
-#                 parts.append(text)
-#         else:
-#             parts.append(child.get_text())
-#     return ''.join(parts)
+def extract_content(element, content):
+    if not isinstance(element, dict):
+        return
 
-# Handles retrieving the text for all kinds of HTML tags
-def returnTagText(article_sections):
-    content = []
-    for article_section in article_sections:
-        if article_section:
-            article_elements = list(filter(is_wanted_element, article_section.find_all(['p', 'li', 'img'])))
-            for elem in article_elements:
-                if elem.name == 'p' or elem.name == 'li':
-                    content.append(returnElementTextContent(elem))
-                # elif elem.name == 'a':
-                #     href = elem.get('href')
-                #     text = elem.string or elem.get_text(strip=True)
-                #     if href:
-                #         content.append({'type': 'link-text', 'subtype': None, 'href': href, 'content': text})
-                #     else:
-                #         content.append({'type': 'text', 'subtype': None, 'content': text})
-                elif elem.name == 'img':
-                    content.append(returnImageContent(elem))
-    return content
+    element_type = element.get("type")
 
-def returnElementTextContent(elem, subtype=None):
-    if not elem: return None
-    return {'type': 'text', 'subtype': subtype, 'content': elem.decode_contents()}
+    if element_type == "text":
+        text = element.get("content", "")
+        if text:
+            content.append({
+                "type": "text",
+                "subtype": None,
+                "content": text
+            })
 
-def returnElementLinkTextContent(elem, subtype=None):
-    if not elem: return None
-    return {'type': 'link-text', 'href': elem.get("href"), 'subtype': subtype, 'content': elem.text}
+    elif element_type == "header":
+        text = element.get("content", "")
+        if text:
+            content.append({
+                "type": "text",
+                "subtype": "header",
+                "content": text
+            })
 
-def returnImageContent(elem, subtype=None):
-    if not elem: return None
-    caption = None
-    alt = elem.get('alt', "Image goes here")
-    figure = elem.find_parent('figure')
-    if figure:
-        figcaption = figure.find('figcaption')
-        if figcaption:
-            caption = figcaption.text.strip()
-    return {'type': 'image', 'subtype': subtype, 'src': elem.get("data-src") or elem['src'], 'srcset': elem.get("data-srcset") or elem.get("srcset"), 'alt': alt, 'caption': caption}
-                    
-def scrapeTitle(soup):
-    title_section = soup.select_one('h1[data-test-ui="article__heading"]')
-    if title_section:
-        return title_section.text
-    
-    viva_heading = soup.select_one('h1[data-test-ui="viva-article__heading"]')
-    if viva_heading:
-        return viva_heading.text
+    elif element_type == "image":
+        image = element.get("image", element)
+        image_url = image.get("url") or image.get("src")
+        if image_url:
+            content.append({
+                "type": "image",
+                "subtype": None,
+                "src": image_url,
+                "srcset": image.get("srcset") or None,
+                "alt": image.get("alt") or "",
+                "caption": image.get("caption") or None
+            })
 
-def scrapeAuthor(soup):    
-    author_img = soup.select_one('img[data-test-ui="author--details__image"]')
-    author_link = soup.select_one('a[data-test-ui="author--link"]')
-    author_role = soup.select_one('span[data-test-ui="author--role"]')
-    author_distributor_name = soup.select_one('span[data-test-ui="distributor--name"]')
-    author_display_date = soup.select_one('time[data-test-ui="author-display--date"]')
-    author_read_time = soup.select_one('span[data-test-ui="author-read-time"]')
-    
-    
-    
-    content = []
-    author_elements = [
-        ('author--role', author_role),
-        ('distributor--name', author_distributor_name),
-        ('author-display--date', author_display_date),
-        ('author-read-time', author_read_time)
-    ]
-    
-    content.append(returnImageContent(author_img, "author--details__image"))
-    if not author_link:
-        author_link = {'type': 'text', 'subtype': 'author--link', 'content': 'NZ Herald'}
-        content.append(author_link)
-    else:
-        content.append(returnElementLinkTextContent(author_link))
-        
-    for subtype, elem in author_elements:
-        content.append(returnElementTextContent(elem, subtype))
-        
-    return content
+    elif element_type == "raw_html":
+        soup = BeautifulSoup(element.get("content", ""), "html.parser")
+        for tag in soup.find_all(["div", "li", "p"]):
+            text = tag.get_text(" ", strip=True)
+            if text:
+                content.append({
+                    "type": "text",
+                    "subtype": None,
+                    "content": text
+                })
 
-# Determines which sections of the article to scrape
-def scrapeContent(url):
-    title = "Title not found"
-    content = []
-    
-    try:
-        response = requests.get(url, timeout=10)
-    except requests.RequestException as err:
-        print(f"Request failed: {err}")
-        return title, content
-    
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
+    if "items" in element and isinstance(element["items"], list):
+        for item in element["items"]:
+            extract_content(item, content)
 
-        # Title Portion
-        title = scrapeTitle(soup)
-        
-        # Author Portion
-        author = scrapeAuthor(soup)
-        
-        #Main sections containing actual article content we want to scrape
-        # article_sections = [soup.select_one('section.article__body'), 
-        #                     soup.select_one('section[data-test-ui="article-top-body"]'),
-        #                     soup.select_one('section[data-test-ui="article-bottom-body"]'),
-        #                     soup.select_one('div.article__raw-html')]
-        
-        article_sections = [*soup.select('section.article__body'), 
-                            soup.select_one('section.article-viva__body'), 
-                            soup.select_one('div.article__raw-html')]
-        content = returnTagText(article_sections)
-    else:
-        print(f"Failed to retrieve the page. Status code: {response.status_code}")
-        
-    return title, author, content
 
 if __name__ == '__main__':
     print("Starting Flask server...")

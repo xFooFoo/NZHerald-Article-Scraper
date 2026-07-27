@@ -53,10 +53,9 @@ function App() {
       const data: APIResponse = await response.json() // Get the response data
       if (response.ok) {
         setContent(data.content || [])
-        setAuthor(data.author?.filter((elem): elem is ContentItem => elem != null) ?? []
-      )
+        setAuthor(data.author?.filter((elem): elem is ContentItem => elem != null) ?? [])
         setTitle(data.title || '')
-        setFetchStatus(data.fetchStatus)
+        setFetchStatus(data.fetchStatus || 'Article loaded successfully')
         setUrl('') // Clear the input after submission
       } else {
         setFetchStatus(data.fetchStatus || 'An error occurred')
